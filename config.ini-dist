@@ -7,6 +7,7 @@ key =
 domain =
 ; comma-separated records list
 records = @,www
+ttl = 3600
 
 [ip]
 ; Choose an IP resolver : either plain text, or web page containing a single IP
