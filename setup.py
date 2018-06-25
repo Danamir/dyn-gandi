@@ -15,6 +15,7 @@ setup(
     install_requires=requires,
     entry_points={
         'console_scripts': [
+            'dyn_gandi = dyn_gandi:cli'
         ]
     },
     dependency_links=[]
