@@ -13,3 +13,6 @@ records = @,www
 resolver_url = http://ipecho.net/plain
 ; resolver_url = http://ifconfig.me/ip
 ; resolver_url = http://www.mon-ip.fr
+
+; Optional alternative IP resolver, called on timeout
+resolver_url_alt =
