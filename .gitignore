@@ -27,3 +27,5 @@ config.ini
 .csync_*
 .owncloud*
 *.iml
+ip.txt
+*.log
