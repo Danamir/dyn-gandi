@@ -10,6 +10,6 @@ records = @,www
 
 [ip]
 ; Choose an IP resolver : either plain text, or web page containing a single IP
-resolver_url = http://www.mon-ip.fr
+resolver_url = http://ipecho.net/plain
 ; resolver_url = http://ifconfig.me/ip
-; resolver_url = http://ipecho.net/plain
+; resolver_url = http://www.mon-ip.fr
