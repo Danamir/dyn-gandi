@@ -75,4 +75,4 @@ NB: If you used a Python virtual environment, replace the script by `<dyn-gandi-
 
 ##### Notes
   - [Gandi LiveDNS documentation](http://doc.livedns.gandi.net/)
-  - Thanks [Gandyn](https://github.com/Chralu/gandin) for the inspiration (and many years of use)
+  - Thanks [Gandyn](https://github.com/Chralu/gandyn) for the inspiration (and many years of use)
