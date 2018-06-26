@@ -166,12 +166,18 @@ def main():
 
     # Write IP file output
     if out_file:
-        with open(out_file, 'w') as file:
-            file.write(ip)
-            file.write("\n")
+        file_ip = None
+        if os.path.exists(out_file):
+            with open(out_file, 'r') as file:
+                file_ip = file.readline().strip()
 
-            if verbose:
-                print("Wrote %s to %s file." % (ip, out_file))
+        if ip != file_ip:
+            with open(out_file, 'w') as file:
+                file.write(ip)
+                file.write("\n")
+
+                if verbose:
+                    print("Wrote %s to %s file." % (ip, out_file))
 
     # Query LiveDNS API
     domain = config['dns']['domain']
