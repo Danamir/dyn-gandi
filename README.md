@@ -31,6 +31,8 @@ Install :
 $ python setup.py install
 $ copy config.ini-dist config.ini
 $ dyn_gandi --help
+-or-
+$ python dyn_gandi.py --help
 ```
 
 Complete the `config.ini` file, in particular check the lines :
@@ -44,6 +46,7 @@ records = @,www
 ```
 
 #### Running
+_Note: `dyn_gandi` can be substituted with `python dyn_gandi.py` if the former does'nt work._
 
 Display help :
 ```shell
