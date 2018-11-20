@@ -11,7 +11,11 @@ Use Gandi LiveDNS API to update DNS records with a dynamic IP.
 
 #### Installation
 
-Download and unzip the sources :
+##### Installation from release :
+ - Download and extract the latest [release](https://github.com/Danamir/dyn-gandi/releases). 
+ - Open a terminal to the extracted directory.
+
+##### Installation from sources :
 ```shell
 $ curl --location https://github.com/Danamir/dyn-gandi/archive/master.zip --output dyn-gandi-master.zip
 $ unzip dyn-gandi-master.zip
@@ -19,6 +23,7 @@ $ mv dyn-gandi-master/ dyn-gandi
 $ cd dyn-gandi
 ```
 
+##### Setup :
 _(Optional)_ Configure Python virtual environment :
 ```shell
 $ python -m venv .env
@@ -77,6 +82,6 @@ $ crontab -e
 
 NB: If you used a Python virtual environment, replace the script by `<dyn-gandi-path>/.env/bin/dyn_gandi` .
 
-##### Notes
+###### Notes
   - [Gandi LiveDNS documentation](http://doc.livedns.gandi.net/)
   - Thanks [Gandyn](https://github.com/Chralu/gandyn) for the inspiration (and many years of use)
