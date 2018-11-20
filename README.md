@@ -15,7 +15,8 @@ Download and unzip the sources :
 ```shell
 $ curl --location https://github.com/Danamir/dyn-gandi/archive/master.zip --output dyn-gandi-master.zip
 $ unzip dyn-gandi-master.zip
-$ cd dyn-gandi-master
+$ mv dyn-gandi-master/ dyn-gandi
+$ cd dyn-gandi
 ```
 
 _(Optional)_ Configure Python virtual environment :
@@ -28,7 +29,7 @@ $ .env/Script/activate.bat (Windows)
 
 Install :
 ```shell
-$ python setup.py install
+$ python setup.py develop
 $ copy config.ini-dist config.ini
 $ dyn_gandi --help
 -or-
