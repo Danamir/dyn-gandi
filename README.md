@@ -29,7 +29,7 @@ _(Optional)_ Configure Python virtual environment :
 $ python -m venv .env
 $ . .env/bin/activate (Linux) 
 -or-
-$ .env/Script/activate.bat (Windows)
+$ .env\Scripts\activate.bat (Windows)
 ```
 
 Install :
