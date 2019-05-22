@@ -45,13 +45,18 @@ class LiveDNSClient:
             headers['Content-type'] = "application/json"
 
         if self.debug:
-            print("Requests: method=%s url=%s headers=%s json=%s" % (method, url, json_data, headers))
+            print("Requests: method=%s url=%s headers=%s json=%s" % (method, url, headers, json_data))
 
         # request
         try:
             r = requests.request(method=method, url=url, headers=headers, json=json_data, timeout=60.0)
         except Timeout:
+            if self.debug:
+                print("Timeout error.")
             return None
+
+        if self.debug:
+            print("Response: status_code=%s ok=%s" % (r.status_code, r.ok))
 
         if not r.ok:
             return None
