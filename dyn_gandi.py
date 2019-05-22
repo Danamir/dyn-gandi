@@ -16,6 +16,7 @@ import configparser
 import json
 import os
 import sys
+import re
 from configparser import ConfigParser
 from datetime import datetime
 
@@ -180,7 +181,13 @@ def main():
                     print("Wrote %s to %s file." % (ip, out_file))
 
     # Query LiveDNS API
-    domain = config['dns']['domain']
+    domain = config['dns']['domain']  # type: str
+
+    if re.match(r"^.+\.[^.]+\.[^.]+$", domain):
+        if verbose:
+            print("Warning: removing sub-domain part of %s" % domain)
+        domain = re.sub(r"^.+\.([^.]+\.[^.]+)$", r"\g<1>", domain)
+
     if verbose:
         print("Domain: %s" % domain)
 
