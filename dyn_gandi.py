@@ -87,7 +87,7 @@ def livedns_handle(domain, ip, records):
     # get DNS IP
     r_record = ldns.get_domain_record(domain, record_name=records[0]['name'], record_type=records[0]['type'])
     if not r_record or not r_record.get('values', []):
-        raise RuntimeWarning("Main record not found to check DNS IP." % domain)
+        raise RuntimeWarning("Main record not found to check DNS IP for domain %s." % domain)
 
     dns_ip = r_record['values'][0]
     message = "Local IP: %s, DNS IP: %s" % (ip, dns_ip)
