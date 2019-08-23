@@ -183,10 +183,13 @@ def main():
     # Query LiveDNS API
     domain = config['dns']['domain']  # type: str
 
+    # Sub-domain check
+    domain = domain.replace(".co.uk", ".co_uk")
     if re.match(r"^.+\.[^.]+\.[^.]+$", domain):
         if verbose:
             print("Warning: removing sub-domain part of %s" % domain)
         domain = re.sub(r"^.+\.([^.]+\.[^.]+)$", r"\g<1>", domain)
+    domain = domain.replace(".co_uk", ".co.uk")
 
     if verbose:
         print("Domain: %s" % domain)
