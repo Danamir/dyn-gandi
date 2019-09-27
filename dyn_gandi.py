@@ -5,11 +5,11 @@ Usage: dyn_gandi [--help] [--verbose] [--dry-run] [--conf=<c>] [--log=<l>] [--ou
 Options:
   -c --conf=<c>         Configuration file. [default: config.ini].
   -d --debug            Debug mode.
-  --dry-run             Display informations quits without modifications.
-  -h --help             Displays the help.
+  --dry-run             Display information and quit without modifications.
+  -h --help             Display this help and exit.
   -l --log=<l>          Log file. [default: ip.log]
   -o --out=<o>          IP output file. [default: ip.txt]
-  -v --verbose          Displays more informations.
+  -v --verbose          Display more information.
 
 """
 import configparser
