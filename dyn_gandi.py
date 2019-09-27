@@ -212,7 +212,7 @@ def main():
 
     # output log
     if verbose:
-        print("")
+        print()
 
     to_log(message, action, datetime_label=today, dump=True)
 
