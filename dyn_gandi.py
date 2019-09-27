@@ -135,7 +135,11 @@ def livedns_handle(domain, ip, records):
                 print("Updated record %s/%s from %s to %s" % (rec['name'], rec['type'], dns_ip, ip))
                 print("API response: %s" % json.dumps(r_update, indent=2))
         except Exception as e:
-            print("%s, Error: %s. Backup snapshot uuid: %s." % (message, repr(e), snapshot_uuid))
+            print(
+                "%s, Error: %s. Backup snapshot uuid: %s."
+                % (message, repr(e), snapshot_uuid),
+                file=sys.stderr,
+            )
             raise e
 
     # delete snapshot
@@ -159,7 +163,7 @@ def main():
         ip_resolver = IpResolver(url=config['ip']['resolver_url'], alt_url=config['ip'].get('resolver_url_alt', None))
         ip = ip_resolver.resolve_ip()
     except IpResolverError as e:
-        print("%s - %s [ERROR]" % (today, str(e)))
+        print("%s - %s [ERROR]" % (today, str(e)), file=sys.stderr)
         raise RuntimeWarning("IP resolver returned an error: %s" % str(e))
 
     if verbose:
