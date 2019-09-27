@@ -127,13 +127,6 @@ def livedns_handle(domain, ip, records):
     for rec in records:
         try:
             r_update = ldns.put_domain_record(domain=domain, record_name=rec['name'], record_type=rec['type'], value=ip, ttl=int(config['dns']['ttl']))
-            if r_update is None:
-                message = "%s, Error when updating: %s/%s. Backup snapshot uuid: %s." % (message, rec['name'], rec['type'], snapshot_uuid)
-                return "ERROR", message
-
-            if verbose:
-                print("Updated record %s/%s from %s to %s" % (rec['name'], rec['type'], dns_ip, ip))
-                print("API response: %s" % json.dumps(r_update, indent=2))
         except Exception as e:
             print(
                 "%s, Error: %s. Backup snapshot uuid: %s."
@@ -141,6 +134,14 @@ def livedns_handle(domain, ip, records):
                 file=sys.stderr,
             )
             raise e
+
+        if r_update is None:
+            message = "%s, Error when updating: %s/%s. Backup snapshot uuid: %s." % (message, rec['name'], rec['type'], snapshot_uuid)
+            return "ERROR", message
+
+        if verbose:
+            print("Updated record %s/%s from %s to %s" % (rec['name'], rec['type'], dns_ip, ip))
+            print("API response: %s" % json.dumps(r_update, indent=2))
 
     # delete snapshot
     ldns.delete_domain_snapshot(domain, uuid=snapshot_uuid)
