@@ -208,29 +208,27 @@ def main():
         action, message = livedns_handle(domain=domain, ip=ip, records=records)
     except Exception as e:
         action, message = "ERROR", "LiveDNS error: %s" % str(e)
-        to_log(message, action, dump=True)
+        to_log(message, action)
 
     # output log
     if verbose:
         print("")
 
-    to_log(message, action, dump=True)
+    to_log(message, action)
 
 
-def to_log(message, action, dump=False):
+def to_log(message, action):
     """Log to file.
 
     :param str message: The log message.
     :param str action: The log action.
-    :param bool dump: Dump the log line to stdout.
     """
 
     datetime_label = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
     log_line = "%s - %s [%s]" % (datetime_label, message, action)
 
-    if dump:
-        print(log_line)
+    print(log_line)
 
     if log_file:
         mode = 'a'
