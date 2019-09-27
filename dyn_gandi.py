@@ -1,17 +1,4 @@
-"""Gandi LiveDNS API to update DNS records with a dynamic IP.
-
-Usage: dyn_gandi [--help] [--verbose] [--dry-run] [--conf=<c>] [--log=<l>] [--out=<o>] [options]...
-
-Options:
-  -c --conf=<c>         Configuration file. [default: config.ini].
-  -d --debug            Debug mode.
-  --dry-run             Display informations quits without modifications.
-  -h --help             Displays the help.
-  -l --log=<l>          Log file. [default: ip.log]
-  -o --out=<o>          IP output file. [default: ip.txt]
-  -v --verbose          Displays more informations.
-
-"""
+import argparse
 import configparser
 import json
 import os
@@ -20,38 +7,27 @@ import re
 from configparser import ConfigParser
 from datetime import datetime
 
-import docopt as docpt
-from docopt import docopt
 from ip_resolver import IpResolver, IpResolverError
 
-# options
 from livedns_client import LiveDNSClient
 
-options = None  # type: dict
-debug = False  # type: bool
-dry_run = False  # type: bool
-verbose = False  # type: bool
-conf_file = None  # type: str
-log_file = None  # type: str
-out_file = None  # type: str
-
-# variables
 config = {}  # type: ConfigParser
 
 
 def parse_options():
-    """Parse docopt options and arguments."""
+    parser = argparse.ArgumentParser()
 
-    # options
-    global debug, verbose, dry_run, conf_file, log_file, out_file
-    debug, verbose, dry_run = options['--debug'], options['--verbose'], options['--dry-run']  # type: bool, bool, bool
-    conf_file, log_file, out_file = options['--conf'], options['--log'], options['--out']  # type: str, str, str
+    parser.add_argument("-c", "--conf", default="config.ini", help="Configuration file.")
+    parser.add_argument("--debug", action="store_true", help="Debug mode.")
+    parser.add_argument("--dry-run", action="store_true", help="Display information and quit without modifications.")
+    parser.add_argument("-l", "--log", default="ip.log", help="Log file.")
+    parser.add_argument("-o", "--out", default="ip.txt", help="IP output file.")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Display more information.")
 
-    if debug or dry_run:
-        verbose = True
+    return parser.parse_args()
 
 
-def parse_configuration():
+def parse_configuration(conf_file):
     """Parse configuration file."""
 
     if not os.path.exists(conf_file):
@@ -66,12 +42,14 @@ def parse_configuration():
     config.read(conf_file)
 
 
-def livedns_handle(domain, ip, records):
+def livedns_handle(domain, ip, records, debug, dry_run):
     """Query LiveDNS API.
 
     :param str domain: The domain to handle.
     :param str ip: The current ip.
     :param list[dict[str,str]] records: The records to update.
+    :param bool debug: Debug mode.
+    :param bool dry_run: Display information and quit without modifications.
     :return: The query result, tuple of action taken and message.
     :rtype: tuple(str,str)
     """
@@ -120,7 +98,7 @@ def livedns_handle(domain, ip, records):
 
     snapshot_uuid = r_snap['uuid']
 
-    if verbose:
+    if options.verbose:
         print("Backup snapshot created, uuid: %s." % snapshot_uuid)
 
     # update DNS records
@@ -131,7 +109,7 @@ def livedns_handle(domain, ip, records):
                 message = "%s, Error when updating: %s/%s. Backup snapshot uuid: %s." % (message, rec['name'], rec['type'], snapshot_uuid)
                 return "ERROR", message
 
-            if verbose:
+            if options.verbose:
                 print("Updated record %s/%s from %s to %s" % (rec['name'], rec['type'], dns_ip, ip))
                 print("API response: %s" % json.dumps(r_update, indent=2))
         except Exception as e:
@@ -140,7 +118,7 @@ def livedns_handle(domain, ip, records):
 
     # delete snapshot
     ldns.delete_domain_snapshot(domain, uuid=snapshot_uuid)
-    if verbose:
+    if options.verbose:
         print("Backup snapshot deleted.")
 
     return "UPDATE", message
@@ -150,8 +128,8 @@ def main():
     """Main method."""
 
     # Init environment
-    parse_options()
-    parse_configuration()
+    options = parse_options()
+    parse_configuration(options.conf)
     today = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
     # Parse IP
@@ -162,23 +140,23 @@ def main():
         print("%s - %s [ERROR]" % (today, str(e)))
         raise RuntimeWarning("IP resolver returned an error: %s" % str(e))
 
-    if verbose:
+    if options.verbose:
         print("Resolved IP: %s" % ip)
 
     # Write IP file output
-    if out_file:
+    if options.out:
         file_ip = None
-        if os.path.exists(out_file):
-            with open(out_file, 'r') as file:
+        if os.path.exists(options.out):
+            with open(options.out, 'r') as file:
                 file_ip = file.readline().strip()
 
         if ip != file_ip:
-            with open(out_file, 'w') as file:
+            with open(options.out, 'w') as file:
                 file.write(ip)
                 file.write("\n")
 
-                if verbose:
-                    print("Wrote %s to %s file." % (ip, out_file))
+                if options.verbose:
+                    print("Wrote %s to %s file." % (ip, options.out))
 
     # Query LiveDNS API
     domain = config['dns']['domain']  # type: str
@@ -186,12 +164,12 @@ def main():
     # Sub-domain check
     domain = domain.replace(".co.uk", ".co_uk")
     if re.match(r"^.+\.[^.]+\.[^.]+$", domain):
-        if verbose:
+        if options.verbose:
             print("Warning: removing sub-domain part of %s" % domain)
         domain = re.sub(r"^.+\.([^.]+\.[^.]+)$", r"\g<1>", domain)
     domain = domain.replace(".co_uk", ".co.uk")
 
-    if verbose:
+    if options.verbose:
         print("Domain: %s" % domain)
 
     records = []
@@ -201,23 +179,29 @@ def main():
     if not records:
         raise RuntimeWarning("No records to update, check configuration.")
 
-    if verbose:
+    if options.verbose:
         print("Records: %s" % ", ".join(map(lambda x: "%s/%s" %(x['name'], x['type']), records)))
 
     try:
-        action, message = livedns_handle(domain=domain, ip=ip, records=records)
+        action, message = livedns_handle(
+            domain=domain,
+            ip=ip,
+            records=records,
+            debug=options.debug,
+            dry_run=options.dry_run
+        )
     except Exception as e:
         action, message = "ERROR", "LiveDNS error: %s" % str(e)
-        to_log(message, action, datetime_label=today, dump=True)
+        to_log(message, action, datetime_label=today, dump=True, log_file=options.log)
 
     # output log
-    if verbose:
+    if options.verbose:
         print("")
 
-    to_log(message, action, datetime_label=today, dump=True)
+    to_log(message, action, datetime_label=today, dump=True, log_file=options.log)
 
 
-def to_log(message, action, datetime_label=None, dump=False):
+def to_log(message, action, datetime_label=None, dump=False, log_file=None):
     """Log to file.
 
     :param str message: The log message.
@@ -247,16 +231,10 @@ def to_log(message, action, datetime_label=None, dump=False):
 def cli():
     """Command-line interface"""
 
-    global options
-    options = docopt(__doc__)
     try:
         main()
     except RuntimeWarning as w:
         print("  Warning: %s" % w, file=sys.stderr)
-        sys.exit(1)
-    except RuntimeError as w:
-        print("%s" % w, file=sys.stderr)
-        print(docpt.printable_usage(__doc__))
         sys.exit(1)
 
 
