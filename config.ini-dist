@@ -11,9 +11,9 @@ ttl = 3600
 
 [ip]
 ; Choose an IP resolver : either plain text, or web page containing a single IP
-resolver_url = http://ipecho.net/plain
-; resolver_url = http://ifconfig.me/ip
-; resolver_url = http://www.mon-ip.fr
+resolver_url = https://ipecho.net/plain
+; resolver_url = https://ifconfig.me/ip
+; resolver_url = https://monip.io
 
 ; Optional alternative IP resolver, called on timeout
 resolver_url_alt =
