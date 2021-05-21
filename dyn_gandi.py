@@ -118,7 +118,7 @@ def livedns_handle(domain, ip, records):
     if r_snap is None:
         raise RuntimeWarning("Could not create snapshot." % domain)
 
-    snapshot_uuid = r_snap['uuid']
+    snapshot_uuid = r_snap['id']
 
     if verbose:
         print("Backup snapshot created, uuid: %s." % snapshot_uuid)
