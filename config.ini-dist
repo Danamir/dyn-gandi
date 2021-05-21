@@ -1,5 +1,5 @@
 [api]
-url = https://dns.api.gandi.net/api/v5
+url = https://api.gandi.net/v5/livedns/
 ; Generate your Gandi API key via : https://account.gandi.net/en/users/<user>/security
 key =
 

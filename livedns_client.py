@@ -37,7 +37,7 @@ class LiveDNSClient:
         url = "%s%s" % (self.url, urllib.parse.quote(query))
 
         headers = {
-            "x-api-key":        self.key,
+            "Authorization":    "Apikey %s" % self.key,
             "Accept":           "application/json",
         }
 
