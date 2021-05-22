@@ -118,10 +118,10 @@ def livedns_handle(domain, ip, records):
     if r_snap is None:
         raise RuntimeWarning("Could not create snapshot." % domain)
 
-    snapshot_uuid = r_snap['uuid']
+    snapshot_id = r_snap['id']
 
     if verbose:
-        print("Backup snapshot created, uuid: %s." % snapshot_uuid)
+        print("Backup snapshot created, id: %s." % snapshot_id)
 
     # update DNS records
     for rec in records:
@@ -129,14 +129,14 @@ def livedns_handle(domain, ip, records):
             r_update = ldns.put_domain_record(domain=domain, record_name=rec['name'], record_type=rec['type'], value=ip, ttl=int(config['dns']['ttl']))
         except Exception as e:
             print(
-                "%s, Error: %s. Backup snapshot uuid: %s."
-                % (message, repr(e), snapshot_uuid),
+                "%s, Error: %s. Backup snapshot id: %s."
+                % (message, repr(e), snapshot_id),
                 file=sys.stderr,
             )
             raise e
 
         if r_update is None:
-            message = "%s, Error when updating: %s/%s. Backup snapshot uuid: %s." % (message, rec['name'], rec['type'], snapshot_uuid)
+            message = "%s, Error when updating: %s/%s. Backup snapshot id: %s." % (message, rec['name'], rec['type'], snapshot_id)
             return "ERROR", message
 
         if verbose:
@@ -144,7 +144,7 @@ def livedns_handle(domain, ip, records):
             print("API response: %s" % json.dumps(r_update, indent=2))
 
     # delete snapshot
-    ldns.delete_domain_snapshot(domain, uuid=snapshot_uuid)
+    ldns.delete_domain_snapshot(domain, sid=snapshot_id)
     if verbose:
         print("Backup snapshot deleted.")
 
