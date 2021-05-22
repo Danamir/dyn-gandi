@@ -171,13 +171,13 @@ class LiveDNSClient:
         }
         return self._query_api(method="POST", query="domains/%s/snapshots" % domain, json_data=json_data)
 
-    def delete_domain_snapshot(self, domain, uuid):
+    def delete_domain_snapshot(self, domain, sid):
         """POST a domain snapshot.
 
         :param str domain: The domain.
-        :param str uuid: The snapshot uuid.
+        :param str sid: The snapshot id.
         :return: The API response, or ``None`` on error.
         :rtype: dict|list|None
         """
 
-        return self._query_api(method="DELETE", query="domains/%s/snapshots/%s" % (domain, uuid))
+        return self._query_api(method="DELETE", query="domains/%s/snapshots/%s" % (domain, sid))
