@@ -16,11 +16,11 @@ import configparser
 import json
 import os
 import sys
-import re
 from configparser import ConfigParser
 from datetime import datetime
 
 import docopt as docpt
+import tldextract
 from docopt import docopt
 from ip_resolver import IpResolver, IpResolverError
 
@@ -189,12 +189,12 @@ def main():
     domain = config['dns']['domain']  # type: str
 
     # Sub-domain check
-    domain = domain.replace(".co.uk", ".co_uk")
-    if re.match(r"^.+\.[^.]+\.[^.]+$", domain):
+    domain_ext = tldextract.extract(domain)
+    if domain_ext.subdomain:
         if verbose:
             print("Warning: removing sub-domain part of %s" % domain)
-        domain = re.sub(r"^.+\.([^.]+\.[^.]+)$", r"\g<1>", domain)
-    domain = domain.replace(".co_uk", ".co.uk")
+
+        domain = f'{domain_ext.domain}.{domain_ext.suffix}'
 
     if verbose:
         print("Domain: %s" % domain)
