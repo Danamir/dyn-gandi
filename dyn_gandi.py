@@ -1,11 +1,12 @@
 """Gandi LiveDNS API to update DNS records with a dynamic IP.
 
-Usage: dyn_gandi [--help] [--verbose] [--dry-run] [--conf=<c>] [--log=<l>] [--out=<o>] [options]...
+Usage: dyn_gandi [--help] [--verbose] [--dry-run] [--force] [--conf=<c>] [--log=<l>] [--out=<o>] [options]...
 
 Options:
   -c --conf=<c>         Configuration file. [default: config.ini].
   -d --debug            Debug mode.
   --dry-run             Display information and quit without modifications.
+  --force               Force DNS update even if IP unchanged.
   -h --help             Display this help and exit.
   -l --log=<l>          Log file. [default: ip.log]
   -o --out=<o>          IP output file. [default: ip.txt]
@@ -30,6 +31,7 @@ from livedns_client import LiveDNSClient
 options = None  # type: dict
 debug = False  # type: bool
 dry_run = False  # type: bool
+force = False  # type: bool
 verbose = False  # type: bool
 conf_file = None  # type: str
 log_file = None  # type: str
@@ -43,8 +45,8 @@ def parse_options():
     """Parse docopt options and arguments."""
 
     # options
-    global debug, verbose, dry_run, conf_file, log_file, out_file
-    debug, verbose, dry_run = options['--debug'], options['--verbose'], options['--dry-run']  # type: bool, bool, bool
+    global debug, verbose, dry_run, force, conf_file, log_file, out_file
+    debug, verbose, dry_run, force = options['--debug'], options['--verbose'], options['--dry-run'], options['--force']  # type: bool, bool, bool, bool
     conf_file, log_file, out_file = options['--conf'], options['--log'], options['--out']  # type: str, str, str
 
     if debug or dry_run:
@@ -93,17 +95,17 @@ def livedns_handle(domain, ip, records):
     message = "Local IP: %s, DNS IP: %s" % (ip, dns_ip)
 
     # PTR record update is needed if '@' record is specified in config
-    update_ptr = True if '@' in dict((r["name"], r) for r in records) else False
+    update_ptr = '@' in dict((r["name"], r) for r in records) and config['dns'].get('update_ptr', 'false').lower() in ('true', '1', 'yes')
 
     # Dry run
     if dry_run:
         records_map = ldns.get_domain_records_map(domain)
 
         print("======== Dry run ========")
-        if ip == dns_ip:
+        if ip == dns_ip and not force:
             print("# Would not update records (no differences):")
         else:
-            print("Would update records:")
+            print("Would update records"+(" (forced)" if force else "")+":")
 
         for rec in records:
             rec_key = "%s/%s" % (rec['name'], rec['type'])
@@ -117,7 +119,7 @@ def livedns_handle(domain, ip, records):
         return "DRY RUN", message
 
     # compare IPs
-    if ip == dns_ip:
+    if ip == dns_ip and not force:
         return "OK", message
 
     # post snapshot
@@ -177,6 +179,7 @@ def livedns_handle(domain, ip, records):
         print("Backup snapshot deleted.")
 
     return "UPDATE", message
+
 
 def ptr_record_name(ip):
     """Generate PTR record name from a given IP
