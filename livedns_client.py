@@ -127,6 +127,27 @@ class LiveDNSClient:
 
         return self._query_api(method="GET", query="domains/%s/records/%s/%s" % (domain, record_name, record_type))
 
+    def post_domain_record(self, domain, record_name, record_type, value, ttl=3600):
+        """POST a domain record.
+
+        :param str domain: The domain.
+        :param str record_name: The record name.
+        :param str record_type: The record type.
+        :param str|list[str] value: The record value(s).
+        :param int ttl: The record time to live. ``(default: 3600)``
+        :return: The API response, or ``None`` on error.
+        :rtype: dict|list|None
+        """
+
+        if type(value) == str:
+            value = [value]
+
+        json_data = {
+            "rrset_ttl":        ttl,
+            "rrset_values":     value,
+        }
+        return self._query_api(method="POST", query="domains/%s/records/%s/%s" % (domain, record_name, record_type), json_data=json_data)
+
     def put_domain_record(self, domain, record_name, record_type, value, ttl=3600):
         """PUT a domain record.
 
@@ -147,6 +168,18 @@ class LiveDNSClient:
             "rrset_values":     value,
         }
         return self._query_api(method="PUT", query="domains/%s/records/%s/%s" % (domain, record_name, record_type), json_data=json_data)
+
+    def delete_domain_record(self, domain, record_name, record_type):
+        """DELETE a domain record.
+
+        :param str domain: The domain.
+        :param str record_name: The record name.
+        :param str record_type: The record type.
+        :return: The API response, or ``None`` on error.
+        :rtype: dict|list|None
+        """
+
+        return self._query_api(method="DELETE", query="domains/%s/records/%s/%s" % (domain, record_name, record_type))
 
     def get_domain_snapshots(self, domain):
         """GET a domain snapshots.
