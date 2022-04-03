@@ -6,9 +6,10 @@ key =
 [dns]
 domain =
 ; comma-separated records list
-; '@' record update will also trigger PTR record update
 records = @,www
 ttl = 3600
+; if true, '@' record update will also trigger PTR record update
+update_ptr = true
 
 [ip]
 ; Choose an IP resolver : either plain text, or web page containing a single IP
