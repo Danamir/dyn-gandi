@@ -92,6 +92,9 @@ def livedns_handle(domain, ip, records):
     dns_ip = r_record['values'][0]
     message = "Local IP: %s, DNS IP: %s" % (ip, dns_ip)
 
+    # PTR record update is needed if '@' record is specified in config
+    update_ptr = True if '@' in dict((r["name"], r) for r in records) else False
+
     # Dry run
     if dry_run:
         records_map = ldns.get_domain_records_map(domain)
@@ -105,6 +108,10 @@ def livedns_handle(domain, ip, records):
         for rec in records:
             rec_key = "%s/%s" % (rec['name'], rec['type'])
             print("  %s from %s to %s" % (rec_key, records_map.get(rec_key, None), ip))
+
+        if update_ptr:
+            print("  delete PTR %s" % (ptr_record_name(dns_ip)))
+            print("  create PTR %s to %s" % (ptr_record_name(ip), domain))
         print("=========================")
 
         return "DRY RUN", message
@@ -143,12 +150,42 @@ def livedns_handle(domain, ip, records):
             print("Updated record %s/%s from %s to %s" % (rec['name'], rec['type'], dns_ip, ip))
             print("API response: %s" % json.dumps(r_update, indent=2))
 
+    # update PTR record
+    if update_ptr:
+        ldns.delete_domain_record(domain=domain, record_name=ptr_record_name(dns_ip), record_type='PTR')
+        try:
+            r_create = ldns.post_domain_record(domain=domain, record_name=ptr_record_name(ip), record_type='PTR', value=domain, ttl=int(config['dns']['ttl']))
+        except Exception as e:
+            print(
+                "%s, Error: %s. Backup snapshot id: %s."
+                % (message, repr(e), snapshot_id),
+                file=sys.stderr,
+            )
+            raise e
+
+        if r_create is None:
+            message = "%s, Error when creating: %s/PTR. Backup snapshot id: %s." % (message, ptr_record_name(ip), snapshot_id)
+            return "ERROR", message
+
+        if verbose:
+            print("Created record %s/PTR to %s" % (ptr_record_name(ip), domain))
+            print("API response: %s" % json.dumps(r_create, indent=2))
+
     # delete snapshot
     ldns.delete_domain_snapshot(domain, sid=snapshot_id)
     if verbose:
         print("Backup snapshot deleted.")
 
     return "UPDATE", message
+
+def ptr_record_name(ip):
+    """Generate PTR record name from a given IP
+
+    :param str ip: An IP address.
+    """
+    members = ip.split('.')
+    members.reverse()
+    return '.'.join(members) + '.in-addr.arpa'
 
 
 def main():

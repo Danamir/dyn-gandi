@@ -6,6 +6,7 @@ key =
 [dns]
 domain =
 ; comma-separated records list
+; '@' record update will also trigger PTR record update
 records = @,www
 ttl = 3600
 
