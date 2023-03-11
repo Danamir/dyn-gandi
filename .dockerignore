@@ -3,3 +3,4 @@ config.ini
 .git
 *~
 config.ini-dist
+.github
