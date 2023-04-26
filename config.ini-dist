@@ -13,7 +13,8 @@ update_ptr = false
 
 [ip]
 ; Choose an IP resolver : either plain text, or web page containing a single IP
-resolver_url = https://ipecho.net/plain
+resolver_url = https://me.gandi.net
+; resolver_url = https://ipecho.net/plain
 ; resolver_url = https://checkip.amazonaws.com
 ; resolver_url = https://ifconfig.me/ip
 ; resolver_url = https://monip.io
