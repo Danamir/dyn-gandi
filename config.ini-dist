@@ -1,6 +1,6 @@
 [api]
 url = https://api.gandi.net/v5/livedns/
-; Generate your Gandi API key via : https://account.gandi.net/en/users/<user>/security
+; Generate your Gandi Personal Access Token via Gandi Dashboard > Organizations > Manage > Create a token
 key =
 
 [dns]
