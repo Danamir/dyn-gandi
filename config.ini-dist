@@ -1,6 +1,8 @@
 [api]
 url = https://api.gandi.net/v5/livedns/
-; Generate your Gandi Personal Access Token via Gandi Dashboard > Organizations > Manage > Create a token
+; Generate a Gandi Personal Access Token (PAT) via either :
+;  - URL : https://account.gandi.net/en/users/<user>/security
+;  - Gandi Dashboard : Organizations > Manage > Create a token
 key =
 
 [dns]

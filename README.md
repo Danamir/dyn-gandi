@@ -4,10 +4,14 @@ Use Gandi LiveDNS API to update DNS records with a dynamic IP.
 
 #### Prequisites
 
-- Go to your Gandi account security page: https://account.gandi.net/en/users/USER/security (where USER is your username)
-- Generate your API key, to be copied into your configuration file
+- Generate a Gandi Personal Access Token (PAT) via either https://account.gandi.net/en/users/USER/security (where USER is your username), or Gandi Dashboard > Organizations > Manage > Create a token :
+  - Choose a mandatory duration (Gandi allows one year max)
+  - Give access at least to the resource `DNS configuration`
 - Python 3.x
 
+##### Note
+
+I recommend creating a repeating alarm in a calendar to be sure to renew the PAT before it is revoked.
 
 #### Installation
 
@@ -52,7 +56,7 @@ records = @,www
 ```
 
 #### Running
-_Note: `dyn_gandi` can be substituted with `python dyn_gandi.py` if the former does'nt work._
+_Note: `dyn_gandi` can be substituted with `python dyn_gandi.py` if the former doesn't work._
 
 Display help :
 ```shell
