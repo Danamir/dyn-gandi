@@ -38,7 +38,7 @@ class LiveDNSClient:
 
         headers = {
             "x-api-key":        self.key,
-            "Authorization":    "Apikey %s" % self.key,
+            "Authorization":    "Bearer %s" % self.key,
             "Accept":           "application/json",
         }
 
