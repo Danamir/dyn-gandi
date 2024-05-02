@@ -51,6 +51,12 @@ class LiveDNSClient:
         # request
         try:
             r = requests.request(method=method, url=url, headers=headers, json=json_data, timeout=60.0)
+            if r.status_code == 403:
+                # on reject, also try the old API key authentication method
+                headers["Authorization"] = headers.get("Authorization").replace("Bearer", "Apikey")
+                if self.debug:
+                    print("Requests: method=%s url=%s headers=%s json=%s" % (method, url, headers, json_data))
+                r = requests.request(method=method, url=url, headers=headers, json=json_data, timeout=60.0)
         except Timeout:
             if self.debug:
                 print("Timeout error.")
